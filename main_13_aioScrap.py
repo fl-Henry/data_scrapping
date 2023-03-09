@@ -2,6 +2,7 @@
 
 import aiohttp
 import asyncio
+import json
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
@@ -91,6 +92,30 @@ async def get_item_data(session, item_url, item_data_list=[]):
     item_data_list.append(item)
 
 
+def data_to_json(item_list, path: str):
+    with open(path, 'w', encoding='utf-8') as file:
+        pass
+
+    data_list = []
+    for item in item_list:
+        item_json = {
+            'p_header': item.p_header,
+            'article': item.article,
+            'brand': item.brand,
+            'model': item.model,
+            'price': item.price,
+            'old_price': item.old_price,
+            'site': item.site,
+            'image_url': item.image_url,
+            'item_url': item.item_url,
+            'category_url': item.category_url,
+        }
+        data_list.append(item_json)
+
+    with open(path, 'a', encoding='utf-8') as file:
+        json.dump(data_list, file, indent=4, ensure_ascii=False)
+
+
 async def main(main_url, debug=False):
     ua = UserAgent()
     fake_ua = {'user-agent': ua.random}
@@ -149,9 +174,15 @@ async def main(main_url, debug=False):
             print('item_data_list')
             print(item_data_list)
         else:
-            print('. Done')
+            print('.', end='')
 
-        print(item_data_list[16])
+        data_to_json(item_data_list, 'data.json')
+
+        if debug:
+            print('----------------------06----------------------')
+            print('data is saved')
+        else:
+            print('. Done')
 
 
 if __name__ == '__main__':
